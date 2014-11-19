@@ -1,0 +1,56 @@
+10
+
+dir
+0
+svn://192.168.0.14/embedded/u-boot-2010.06-psp04.04.00.01/board/insys
+svn://192.168.0.14/embedded
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+7a17db86-f509-a241-ad20-ad0bbc0146e6
+
+fm403c
+dir
+
+
+
+add
+
+d2xt005
+dir
+
+
+
+add
+
+d2xt006
+dir
+
+
+
+add
+
+ku_sscos
+dir
+
+
+
+add
+
