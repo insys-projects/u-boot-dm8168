@@ -25,8 +25,8 @@
 
 #ifdef CONFIG_TI816X_EVM_DDR3
 
-//#define CONFIG_TI816X_DDR3_796 /* Values supported 400,531,675,796 */
-#define CONFIG_TI816X_DDR3_400 /* Values supported 400,531,675,796 */
+#define CONFIG_TI816X_DDR3_796 /* Values supported 400,531,675,796 */
+//#define CONFIG_TI816X_DDR3_400 /* Values supported 400,531,675,796 */
 /* Enable software leveling as part of DDR3 init*/
 #define CONFIG_TI816X_DDR3_SW_LEVELING
 
@@ -164,8 +164,8 @@
 /*
  * data rate in MHz.  The DDR clock will be 1/2 of this value
  */
-//#define DDR_DATA_RATE		800
-#define DDR_DATA_RATE		400
+#define DDR_DATA_RATE		800
+//#define DDR_DATA_RATE		400
 
 #define USE_EMIF0		1
 #define USE_EMIF1		0
@@ -185,9 +185,14 @@
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
-#define RD_DQS_GATE	((emif == 0) ? 0x106 : 0x106)
-#define RD_DQS		((emif == 0) ? 0x3B : 0x3B)
-#define WR_DQS		((emif == 0) ? 0x8F : 0x8F)
+#define RD_DQS_GATE     ((emif == 0) ? 0x103 : 0x103)
+#define RD_DQS          ((emif == 0) ? 0x39 : 0x39)
+#define WR_DQS          ((emif == 0) ? 0x94 : 0x94)
+
+//#define RD_DQS_GATE<--->((emif == 0) ? 0x114 : 0x114)
+//#define RD_DQS<><------>((emif == 0) ? 0x3B : 0x3B)
+//#define WR_DQS<><------>((emif == 0) ? 0x8A : 0x8A)
+
 #endif
 
 #endif	/* CONFIG_TI816X_DDR3_400 */
@@ -240,9 +245,12 @@
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
-#define RD_DQS_GATE	((emif == 0) ? 0x116 : 0x116)
-#define RD_DQS		((emif == 0) ? 0x39 : 0x39)
-#define WR_DQS		((emif == 0) ? 0x97 : 0x97)
+//#define RD_DQS_GATE     ((emif == 0) ? 0x12C : 0x12C)
+//#define RD_DQS          ((emif == 0) ? 0x34 : 0x34)
+//#define WR_DQS          ((emif == 0) ? 0xB3 : 0xB3)
+#define RD_DQS_GATE     ((emif == 0) ? 0x14F : 0x14F)
+#define RD_DQS          ((emif == 0) ? 0x37 : 0x37)
+#define WR_DQS          ((emif == 0) ? 0x9B : 0x9B)
 
 #endif
 
