@@ -194,8 +194,8 @@
 # define CONFIG_BOOTP_SUBNETMASK
 # define CONFIG_NET_RETRY_COUNT		10
 # define CONFIG_NET_MULTI
-# define PHY_KSZ8051MNL            		(0x00221555)
-# define PHY_KSZ8051MNL_REV2            (0x00221556)
+# define PHY_KSZ8051MNL            (0x00221555)
+# define PHY_KSZ8051MNL_REV2       (0x00221556)
 #endif
 
 #if defined(CONFIG_SYS_NO_FLASH)
