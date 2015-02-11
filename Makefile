@@ -3558,6 +3558,96 @@ $(INSYS_BOARD)_min_ocmc:	unconfig
 
 endif
 
+#########################################################################
+## PEGAS
+#########################################################################
+
+#INSYS_BOARD := pegas
+
+ifneq (,$(findstring pegas, $(INSYS_BOARD)))
+
+$(INSYS_BOARD)_config	\
+$(INSYS_BOARD)_config_nand	\
+$(INSYS_BOARD)_config_nor	\
+$(INSYS_BOARD)_config_spi	\
+$(INSYS_BOARD)_config_sd	\
+$(INSYS_BOARD)_min_spi	\
+$(INSYS_BOARD)_min_uart	\
+$(INSYS_BOARD)_min_nand	\
+$(INSYS_BOARD)_min_eth	\
+$(INSYS_BOARD)_min_sd:	unconfig
+	@mkdir -p $(obj)include
+	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
+	@echo "#define CONFIG_TI814X"	>>$(obj)include/config.h
+	@if [ "$(findstring _min_,$@)" ] ; then \
+		echo "TEXT_BASE = 0x80700000" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp; \
+		echo "#define CONFIG_TI814X_MIN_CONFIG"    >>$(obj)include/config.h ; \
+		echo "Setting up TI8148 minimal build for 1st stage..." ; \
+		if [ "$(findstring nand,$@)" ] ; then \
+			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		elif [ "$(findstring spi,$@)" ] ; then \
+			echo "#define CONFIG_SPI_BOOT" >>$(obj)include/config.h;\
+			echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_SPI_BOOT"	>>$(obj)include/config.h ; \
+			echo "TI_IMAGE = u-boot.min" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		elif [ "$(findstring uart,$@)" ] ; then \
+			echo "#define CONFIG_UART_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
+			echo "TI_IMAGE = $(INSYS_BOARD)-u-boot.min.uart" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		elif [ "$(findstring eth,$@)" ] ; then \
+			echo "#define CONFIG_ETH_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_PERIPHERAL_BOOT"	>>$(obj)include/config.h; \
+			echo "TI_IMAGE = u-boot.min.eth" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		elif [ "$(findstring sd,$@)" ] ; then \
+			echo "#define CONFIG_SD_BOOT"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "TI_IMAGE = u-boot.min.sd" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		else	\
+			echo "#define CONFIG_NAND_BOOT"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+			echo "TI_IMAGE = u-boot.min.nand" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		fi;	\
+	else	\
+		echo "TEXT_BASE = 0x80700000" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		echo "#define CONFIG_TI_DUMMY_HEADER"	>>$(obj)include/config.h; \
+		echo "TI_IMAGE = DUMMY" >> $(obj)board/insys/$(INSYS_BOARD)/config.tmp;\
+		if [ "$(findstring _nand,$@)" ] ; then \
+			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_VIDEO"    >>$(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with ENV in NAND..." ; \
+		elif [ "$(findstring _nor,$@)" ] ; then \
+			echo "#define CONFIG_NOR"	>>$(obj)include/config.h ; \
+			echo "#define CONFIG_NOR_BOOT"	>>$(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with ENV in NOR..." ; \
+		elif [ "$(findstring spi,$@)" ] ; then \
+			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+			echo "#define CONFIG_SPI_ENV"    >>$(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with ENV in SPI..." ; \
+		elif [ "$(findstring sd,$@)" ] ; then \
+			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+			echo "#define CONFIG_MMC_ENV"    >>$(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with ENV in MMC..." ; \
+		else	\
+			echo "#define CONFIG_SYS_NO_FLASH" >> $(obj)include/config.h ; \
+			echo "#define CONFIG_NAND_ENV"    >>$(obj)include/config.h ; \
+			echo "#define CONFIG_TI81XX_VIDEO"    >>$(obj)include/config.h ; \
+			echo "Setting up TI8148 default build with ENV in NAND..." ; \
+		fi; \
+	fi;
+	@$(MKCONFIG) -a $(INSYS_BOARD) arm arm_cortexa8 $(INSYS_BOARD) insys $(INSYS_BOARD)
+
+endif
+
 dm385_evm_config	\
 dm385_evm_config_nand	\
 dm385_evm_config_nor	\
