@@ -450,9 +450,9 @@ static void config_ti816x_sdram_ddr(void)
 
 #ifdef CONFIG_MINIMAL
 	/* Program the DMM to for non-interleaved configuration */
-	__raw_writel(0x0, DMM_LISA_MAP__0);
-        __raw_writel(0x80500200, DMM_LISA_MAP__1);
-        __raw_writel(0xA0500200, DMM_LISA_MAP__2);
+        __raw_writel(0x80500200, DMM_LISA_MAP__0);
+        __raw_writel(0xC0500200, DMM_LISA_MAP__1);
+        __raw_writel(0x80500200, DMM_LISA_MAP__2);
         __raw_writel(0xC0500200, DMM_LISA_MAP__3);
 #else
 
@@ -465,9 +465,9 @@ static void config_ti816x_sdram_ddr(void)
 #endif
 
 	/* Program the DMM to for interleaved configuration */
-	__raw_writel(0x0, DMM_LISA_MAP__0);
-        __raw_writel(0x80500200, DMM_LISA_MAP__1);
-        __raw_writel(0xA0500200, DMM_LISA_MAP__2);
+        __raw_writel(0x80500200, DMM_LISA_MAP__0);
+        __raw_writel(0xC0500200, DMM_LISA_MAP__1);
+        __raw_writel(0x80500200, DMM_LISA_MAP__2);
         __raw_writel(0xC0500200, DMM_LISA_MAP__3);
 #endif
 
@@ -751,9 +751,9 @@ static void config_ti816x_sdram_ddr(void)
 
 #ifdef CONFIG_MINIMAL
 	/* Program the DMM for non-interleave setting */
-        __raw_writel(0x0, DMM_LISA_MAP__0);
-        __raw_writel(0x80500200, DMM_LISA_MAP__1);
-        __raw_writel(0xA0500200, DMM_LISA_MAP__2);
+        __raw_writel(0x80500200, DMM_LISA_MAP__0);
+        __raw_writel(0xC0500200, DMM_LISA_MAP__1);
+        __raw_writel(0x80500200, DMM_LISA_MAP__2);
         __raw_writel(0xC0500200, DMM_LISA_MAP__3);
 #else
 
@@ -766,10 +766,10 @@ static void config_ti816x_sdram_ddr(void)
 #endif
 
 	/*Program the DMM for interleave setting */
-    __raw_writel(0x0, DMM_LISA_MAP__0);
-    __raw_writel(0x80500200, DMM_LISA_MAP__1);
-    __raw_writel(0xA0500200, DMM_LISA_MAP__2);
-    __raw_writel(0xC0500200, DMM_LISA_MAP__3);
+        __raw_writel(0x80500200, DMM_LISA_MAP__0);
+        __raw_writel(0xC0500200, DMM_LISA_MAP__1);
+        __raw_writel(0x80500200, DMM_LISA_MAP__2);
+        __raw_writel(0xC0500200, DMM_LISA_MAP__3);
 #endif
 
 	/*Enable Tiled Access*/

@@ -29,6 +29,9 @@
 /* Enable software leveling as part of DDR3 init*/
 #define CONFIG_TI816X_DDR3_SW_LEVELING
 
+#if !defined(CPU_0) && !defined(CPU_1)
+#error You need set CPU_0 or CPU_1 macro for D2XT006 u-boot compilation.
+#endif
 
 /*
  * DDR3 force values.  These are board dependent
@@ -183,9 +186,18 @@
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
-#define RD_DQS_GATE	((emif == 0) ? 0x12A : 0x12A)
+#ifdef CPU_0
+#define RD_DQS_GATE	((emif == 0) ? 0x90 : 0x90)
 #define RD_DQS		((emif == 0) ? 0x3B : 0x3B)
-#define WR_DQS		((emif == 0) ? 0xA6 : 0xA6)
+#define WR_DQS		((emif == 0) ? 0x8A : 0x8A)
+#endif
+
+#ifdef CPU_1
+#define RD_DQS_GATE	((emif == 0) ? 0x103 : 0x103)
+#define RD_DQS		((emif == 0) ? 0x39 : 0x39)
+#define WR_DQS		((emif == 0) ? 0x94 : 0x94)
+#endif
+
 #endif
 
 #endif	/* CONFIG_TI816X_DDR3_400 */
@@ -229,6 +241,7 @@
 
 /* For 796 MHz */
 #if defined(CONFIG_TI816X_DDR3_796)
+
 #define EMIF_TIM1   0x1779C9FE
 #define EMIF_TIM2   0x50608074
 #define EMIF_TIM3   0x009F857F
@@ -239,14 +252,14 @@
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
 #ifdef CPU_0
-#define RD_DQS_GATE	((emif == 0) ? 0x12F : 0x12F)
-#define RD_DQS		((emif == 0) ? 0x34 : 0x34)
-#define WR_DQS		((emif == 0) ? 0x9A : 0x9A)
+#define RD_DQS_GATE	((emif == 0) ? 0x12E : 0x12E)
+#define RD_DQS		((emif == 0) ? 0x3E : 0x3E)
+#define WR_DQS		((emif == 0) ? 0x9B : 0x9B)
 #endif
 #ifdef CPU_1
-#define RD_DQS_GATE	((emif == 0) ? 0x122 : 0x122)
-#define RD_DQS		((emif == 0) ? 0x39 : 0x39)
-#define WR_DQS		((emif == 0) ? 0x94 : 0x94)
+#define RD_DQS_GATE	((emif == 0) ? 0x12C : 0x12C)
+#define RD_DQS		((emif == 0) ? 0x34 : 0x34)
+#define WR_DQS		((emif == 0) ? 0xB3 : 0xB3)
 #endif
 #endif
 

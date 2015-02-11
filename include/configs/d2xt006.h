@@ -115,10 +115,9 @@
 
 #define CPU_0
 //#define CPU_1
-#ifndef CPU_0
-#ifndef CPU_1
-#error You need set CPU_0 or CPU_1 macro for u-boot compilation.
-#endif
+
+#if !defined(CPU_0) && !defined(CPU_1)
+#error You need set CPU_0 or CPU_1 macro for D2XT006 u-boot compilation.
 #endif
 
 /*
@@ -148,6 +147,9 @@
 #define CONFIG_SYS_MEMTEST_START	(PHYS_DRAM_2 + (64 *1024 *1024))
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START \
 					+ (8 * 1024 * 1024))
+
+/* Perform alternate memory test */
+#define CONFIG_SYS_ALT_MEMTEST
 
 #undef  CONFIG_SYS_CLKS_IN_HZ				/* everything, incl board info, in Hz */
 #define CONFIG_SYS_LOAD_ADDR		0xC1000000	/* Default load address */

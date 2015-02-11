@@ -796,10 +796,13 @@ int davinci_emac_initialize(void)
     debug_emac("PHYID2: 0x%x\n", tmp);
 
     phy_id |= tmp & 0x0000ffff;
+
+    debug_emac("PHYID: 0x%x\n", phy_id);
 #endif
 
     switch (phy_id) {
 #if defined(PHY_KSZ8051MNL_REV2) || defined(PHY_KSZ8051MNL)
+    case PHY_KSZ8051MNL:
     case PHY_KSZ8051MNL_REV2:
         sprintf(phy.name, "KSZ8051MNL REV2 @ 0x%02x", active_phy_addr);
         phy.init = gen_init_phy;
