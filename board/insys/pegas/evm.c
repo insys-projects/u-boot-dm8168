@@ -30,7 +30,7 @@
 #include <miiphy.h>
 #include <netdev.h>
 
-#define USE_PCIE
+#define USE_PCIE        1
 
 #if CONFIG_CMD_LED
 void led_init(void);
@@ -120,7 +120,7 @@ int is_ddr3(void)
 
 #ifdef CONFIG_SETUP_PLL
 static void pll_config(u32, u32, u32, u32, u32);
-#ifdef USE_PCIE
+#if USE_PCIE
 static void pcie_pll_config(void);
 static void pcie_config_ex(void);
 #endif
@@ -478,14 +478,72 @@ static void audio_pll_config()
 			AUDIO_M2, AUDIO_CLKCTRL);
 }
 
-#ifdef USE_PCIE
+#if USE_PCIE
+static void pcie_ep_config()
+{
+    /* Set "Application Request Retry Enable" while we configure EP. 
+       Disable LTSSM in CMD_STATUS */
+    __raw_writel(((__raw_readl(0x51000004) & ~0x3F) | (1 << 4)), 0x51000004);
+
+    /* Set vendor & device ID. (VENDOR_DEVICE_ID) */
+    __raw_writel((0x4953 | (0x6677 << 16)), 0x51001000);
+
+    /* Enable device for memory accesses. (STATUS_COMMAND) */
+    __raw_writel((__raw_readl(0x51001004) | (1 << 1)), 0x51001004);
+
+    /* Set CLASSCODE. (CLASSCODE_REVID) */
+    __raw_writel(0x04000001, 0x51001008);
+
+    /* Enable DBI_CS2 - allows BAR mask setup. (CMD_STATUS) */
+    __raw_writel((__raw_readl(0x51000004) | (1 << 5)), 0x51000004);
+    while((__raw_readl(0x51000004) & (1 << 5)) == 0);
+
+    /* Set BAR masks prior to enumeration by RC. */
+    __raw_writel(0x000FFFFF, 0x51001010); /* BAR0: 1 MiB */
+    __raw_writel(0x000FFFFF, 0x51001014); /* BAR1: 1 MiB */
+    __raw_writel(0x00000000, 0x51001018); /* BAR2: disabled */
+    __raw_writel(0x00000000, 0x5100101C); /* BAR3: disabled */
+    __raw_writel(0x00000000, 0x51001020); /* BAR4: disabled */
+    __raw_writel(0x00000000, 0x51001024); /* BAR5: disabled */
+
+    /* Disable DBI_CS2. (CMD_STATUS) */
+    __raw_writel((__raw_readl(0x51000004) & ~(1 << 5)), 0x51000004);
+
+    /* Set BAR access type and attributes after DBI_CS2 disable. */
+    __raw_writel(0x00000000, 0x51001010); /* BAR0: 32-bit, !pre-fetch */
+    __raw_writel(0x00000000, 0x51001014); /* BAR1: 32-bit, !pre-fetch */
+    __raw_writel(0x00000000, 0x51001018); /* BAR2: disabled */
+    __raw_writel(0x00000000, 0x5100101C); /* BAR3: disabled */
+    __raw_writel(0x00000000, 0x51001020); /* BAR4: disabled */
+    __raw_writel(0x00000000, 0x51001024); /* BAR5: disabled */
+
+    /* Enable [in/out]-bound address translation. (CMD_STATUS) */
+    __raw_writel(__raw_readl(0x51000004) | (3 << 1), 0x51000004);
+
+    /* Disable legacy and set-up MSI interrupts. */
+    __raw_writel(0x00000000, 0x5100018C);
+    __raw_writel(__raw_readl(0x51001004) | (1 << 10), 0x51001004);
+    __raw_writel(__raw_readl(0x51001050) | (1 << 16), 0x51001050);
+    __raw_writel(0xFFFFFFFF, 0x51000108);
+
+    /* Set x1 mode: LINK_CAP, PL_GEN2 & PL_LINK_CTRL */
+    __raw_writel((__raw_readl(0x5100107C) & ~(0x3F << 4)) | (1 << 4),  0x5100107C);
+    __raw_writel((__raw_readl(0x5100180C) & ~(0xFF << 8)) | (1 << 8),  0x5100180C);
+    __raw_writel((__raw_readl(0x51001710) & ~(0x3F << 16))| (1 << 16), 0x5100180C);
+
+   /* Enable LTSSM and clear Application Request Retry */
+   __raw_writel( (__raw_readl(0x51000004) & ~(1 << 4)) | 0x1, 0x51000004);
+
+    /* Wait for training to complete */
+    while((__raw_readl(0x51001728) & 0x11) != 0x11);
+}
 
 static void pcie_config_ex(void)
 {
-   /* Set PCIe subsystem in EP mode */
+   /* Set PCIe subsystem in EP mode in PCIE_CFG register*/
    __raw_writel(0x00000000, 0x48140480);
 
-   /* Unreset PCIe subsystem */
+   /* Unreset PCIe subsystem in RM_DEFAULT_RSTCTRL register */
    __raw_writel(0x0000007F, 0x48180B10);
 
    /* CM_DEFAULT_PCI_CLKCTRL */
@@ -497,6 +555,8 @@ static void pcie_config_ex(void)
 
 static void pcie_pll_config()
 {
+	pcie_config_ex();
+
 	/* Powerdown both reclkp/n single ended receiver */
 	__raw_writel(0x00000002, SERDES_REFCLK_CTRL);
 
@@ -536,17 +596,20 @@ static void pcie_pll_config()
 	delay(3);
 	__raw_writel(0x30000016, PCIE_PLLCFG0);
 	delay(3);
-	__raw_writel(0x70000016, PCIE_PLLCFG0);
+	__raw_writel(0x70007016, PCIE_PLLCFG0);
 	delay(3);
 
 	/* Enable DIG LDO, SELSC, ENBGSC_REF, PLL LDO */
-	__raw_writel(0x70000017, PCIE_PLLCFG0);
+	__raw_writel(0x70007017, PCIE_PLLCFG0);
 	delay(3);
 
 	/* wait for ADPLL lock */
-    while(((__raw_readl(PCIE_PLLSTATUS) & 0x01) == 0x0));
+    	while(((__raw_readl(PCIE_PLLSTATUS) & 0x01) == 0x0));
+
+	pcie_ep_config();
 }
 #endif //USE_PCIE
+
 
 static void sata_pll_config()
 {
@@ -769,7 +832,7 @@ void prcm_init(u32 in_ddr)
 	/* Setup the various plls */
 	audio_pll_config();
 	sata_pll_config();
-#ifdef USE_PCIE
+#if USE_PCIE
 	pcie_pll_config();
 #endif
 	modena_pll_config();
@@ -781,13 +844,11 @@ void prcm_init(u32 in_ddr)
 
 	usb_pll_config();
 
-
 	/*  With clk freqs setup to desired values,
 	 *  enable the required peripherals
 	 */
 	per_clocks_enable();
 #endif
-    pcie_config_ex();
 }
 
 #define PADCTRL_BASE 0x48140000
