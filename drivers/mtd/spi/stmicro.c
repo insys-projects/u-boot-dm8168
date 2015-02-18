@@ -27,8 +27,6 @@
  * MA 02111-1307 USA
  */
 
-//#define DEBUG
-
 #include <common.h>
 #include <malloc.h>
 #include <spi_flash.h>
@@ -43,6 +41,7 @@
 #define CMD_M25PXX_READ		0x03	/* Read Data Bytes */
 #define CMD_M25PXX_FAST_READ	0x0b	/* Read Data Bytes at Higher Speed */
 #define CMD_M25PXX_PP		0x02	/* Page Program */
+#define CMD_M25PXX_SSE		0x20	/* Sub Sector Erase */
 #define CMD_M25PXX_SE		0xd8	/* Sector Erase */
 #define CMD_M25PXX_BE		0xc7	/* Bulk Erase */
 #define CMD_M25PXX_DP		0xb9	/* Deep Power-down */
@@ -55,6 +54,7 @@
 #define STM_ID_M25P64		0x17
 #define STM_ID_M25P80		0x14
 #define STM_ID_M25P128		0x18
+#define STM_ID_M25P256		0x19
 
 #define STMICRO_SR_WIP		(1 << 0)	/* Write-in-Progress */
 
@@ -127,6 +127,13 @@ static const struct stmicro_spi_flash_params stmicro_spi_flash_table[] = {
 		.pages_per_sector = 1024,
 		.nr_sectors = 64,
 		.name = "M25P128",
+	},
+	{
+		.idcode1 = STM_ID_M25P256,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 512,
+		.name = "N25Q256",
 	},
 };
 
@@ -265,23 +272,13 @@ int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 
 	sector_size = stm->params->page_size * stm->params->pages_per_sector;
 
-        debug("SF: offset = %x\n", offset);
-        debug("SF: sector_size = %x\n", sector_size);
-        debug("SF: length = %x\n", len);
-
-        if (offset % sector_size) {
+	if (offset % sector_size || len % sector_size) {
 		debug("SF: Erase offset/length not multiple of sector size\n");
 		return -1;
 	}
 
-        if(len >= sector_size)
-            len /= sector_size;
-        else
-            len = 1;
-
-	cmd[0] = CMD_M25PXX_SE;
-	cmd[2] = 0x00;
-	cmd[3] = 0x00;
+	len /= sector_size;
+	cmd[0] = CMD_M25PXX_SSE;
 
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
@@ -291,7 +288,11 @@ int stmicro_erase(struct spi_flash *flash, u32 offset, size_t len)
 
 	ret = 0;
 	for (actual = 0; actual < len; actual++) {
+
 		cmd[1] = offset >> 16;
+		cmd[2] = offset >> 8;
+		cmd[3] = offset;
+
 		offset += sector_size;
 
 		ret = spi_flash_cmd(flash->spi, CMD_M25PXX_WREN, NULL, 0);
