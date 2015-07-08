@@ -239,7 +239,7 @@
 #define EMIF_TIM3   0x009F857F
 #define EMIF_SDREF  0x10001841
 #define EMIF_SDCFG  0x62A73832
-#define EMIF_PHYCFG 0x00000310
+#define EMIF_PHYCFG 0x00000110
 
 #if defined(CONFIG_TI816X_DDR3_SW_LEVELING)
 /* These values are obtained from the CCS app */
