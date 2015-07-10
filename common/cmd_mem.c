@@ -663,12 +663,6 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 #else
 	ulong	incr;
 	ulong	pattern;
-	ulong	num_words;
-	ulong	num_errors;
-	ulong	num_pass;
-	ulong	i;
-	ulong	j;
-	ulong	tmp;
 #endif
 
 	if (argc > 1)
@@ -685,69 +679,6 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		pattern = (ulong)simple_strtoul(argv[3], NULL, 16);
 	else
 		pattern = 0;
-
-	num_words = ((ulong)end - (ulong)start)/sizeof(long) + 1;
-	num_errors = 0;
-	num_pass = 0;
-	tmp = 0;
-	val = 0;
-
-	if(pattern) {
-
-		printf("Testing %08x ... %08x: Running 1. Num words = 0x%x\n", 
-			(uint)start, (uint)end, (uint)num_words);
-
-		for(i=0; i<32; i++) {
-
-			val = ((ulong)0x1 << i);
-
-			for(j=0; j<num_words; j++) {
-				start[j] = val;
-			}
-
-			for(j=0; j<num_words; j++) {
-				tmp = start[j];
-				if(tmp != val) {
-					printf("0x%08x:  0x%08x  0x%08x\n", 
-						(uint)&start[j], (uint)val, (uint)tmp);
-					++num_errors;
-				} else {
-					++num_pass;
-				}
-			}
-		}
-
-	} else {
-
-		printf("Testing %08x ... %08x: Running 0. Num words = 0x%x\n", 
-			(uint)start, (uint)end, (uint)num_words);
-
-		for(i=0; i<32; i++) {
-
-			val = ~((ulong)0x1 << i);
-
-			for(j=0; j<num_words; j++) {
-				start[j] = val;
-			}
-
-			for(j=0; j<num_words; j++) {
-				tmp = start[j];
-				if(tmp != val) {
-					printf("0x%08x:  0x%08x  0x%08x\n", 
-						(uint)&start[j], (uint)val, (uint)tmp);
-					++num_errors;
-				} else {
-					++num_pass;
-				}
-			}
-		}
-
-	}
-
-	printf ("Errors: %d\n", (uint)num_errors);
-	printf ("Pass:   %d\n", (uint)num_pass);
-
-	return 0;
 
 	if (argc > 4)
 		iteration_limit = (ulong)simple_strtoul(argv[4], NULL, 16);

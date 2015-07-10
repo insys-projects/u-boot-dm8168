@@ -1076,6 +1076,10 @@ static void peripheral_enable(void)
 	__raw_writel(0x2, CM_ALWON_GPIO_0_CLKCTRL);
 	while(__raw_readl(CM_ALWON_GPIO_0_CLKCTRL) != 0x2);
 
+	/* GPIO1 */
+	__raw_writel(0x2, CM_ALWON_GPIO_1_CLKCTRL);
+	while(__raw_readl(CM_ALWON_GPIO_1_CLKCTRL) != 0x2);
+
 	__raw_writel((BIT(8)), CM_ALWON_GPIO_0_OPTFCLKEN_DBCLK);
 
 	/* SPI */
