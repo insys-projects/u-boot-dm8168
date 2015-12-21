@@ -452,8 +452,8 @@ static void config_ti816x_sdram_ddr(void)
 	/* Program the DMM to for non-interleaved configuration */
 	__raw_writel(0x80500100, DMM_LISA_MAP__0);
 	__raw_writel(0xC0500100, DMM_LISA_MAP__1);
-	__raw_writel(0x0, DMM_LISA_MAP__2);
-	__raw_writel(0x0, DMM_LISA_MAP__3);
+	__raw_writel(0x80500100, DMM_LISA_MAP__2);
+	__raw_writel(0xC0500100, DMM_LISA_MAP__3);
 #else
 
 /* In case of NOR boot, we use XIP and this has inherent delay.
@@ -467,8 +467,8 @@ static void config_ti816x_sdram_ddr(void)
 	/* Program the DMM to for interleaved configuration */
 	__raw_writel(0x80500100, DMM_LISA_MAP__0);
 	__raw_writel(0xC0500100, DMM_LISA_MAP__1);
-	__raw_writel(0x0, DMM_LISA_MAP__2);
-	__raw_writel(0x0, DMM_LISA_MAP__3);
+	__raw_writel(0x80500100, DMM_LISA_MAP__2);
+	__raw_writel(0xC0500100, DMM_LISA_MAP__3);
 #endif
 
 	/*Enable Tiled Access*/
