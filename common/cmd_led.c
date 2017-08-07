@@ -68,11 +68,9 @@ static int do_led_off(int argc, char *argv[])
     switch(id) {
     case 1:
         led1_red_off();
-        led1_green_off();
         break;
     case 2:
-        led2_red_off();
-        led2_green_off();
+        led1_green_off();
         break;
     }
 

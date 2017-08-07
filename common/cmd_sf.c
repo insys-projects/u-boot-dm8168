@@ -5,8 +5,6 @@
  * Licensed under the GPL-2 or later.
  */
 
-//#define DEBUG
-
 #include <common.h>
 #include <spi_flash.h>
 
@@ -59,7 +57,7 @@ static int do_spi_flash_probe(int argc, char *argv[])
 
 	new = spi_flash_probe(bus, cs, speed, mode);
 	if (!new) {
-                printf("Failed to initialize SPI flash at %u:%u\n", bus, cs);
+		printf("Failed to initialize SPI flash at %u:%u\n", bus, cs);
 		return 1;
 	}
 

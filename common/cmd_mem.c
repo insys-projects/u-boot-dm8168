@@ -634,6 +634,10 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	ulong	errs = 0;
 	int iterations = 1;
 	int iteration_limit;
+	ulong	num_errors;
+	ulong	num_pass;
+	ulong	i;
+	ulong	tmp;
 
 #if defined(CONFIG_SYS_ALT_MEMTEST)
 	vu_long	len;
@@ -664,11 +668,11 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	ulong	incr;
 	ulong	pattern;
 	ulong	num_words;
-	ulong	num_errors;
-	ulong	num_pass;
-	ulong	i;
+//	ulong	num_errors;
+//	ulong	num_pass;
+//	ulong	i;
 	ulong	j;
-	ulong	tmp;
+//	ulong	tmp;
 #endif
 
 	if (argc > 1)
@@ -697,13 +701,17 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		printf("Testing %08x ... %08x: Running 1. Num words = 0x%x\n", 
 			(uint)start, (uint)end, (uint)num_words);
 
-		for(i=0; i<32; i++) {
+		for(i=0; i<2; i++) {
 
 			val = ((ulong)0x1 << i);
 
 			for(j=0; j<num_words; j++) {
 				start[j] = val;
+				if(((j % 4096) == 0) && (j != 0)) 
+				    printf("Fill memory range: 0x%x\r", j);
 			}
+
+			printf("\nFill all specified memory range\n");
 
 			for(j=0; j<num_words; j++) {
 				tmp = start[j];
@@ -714,7 +722,9 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 				} else {
 					++num_pass;
 				}
+				if(((j % 4096) == 0) && (j != 0)) printf("Check memory range: 0x%x\r", j);
 			}
+			printf("\nPass count: %08x\n", i);
 		}
 
 	} else {
@@ -722,13 +732,16 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 		printf("Testing %08x ... %08x: Running 0. Num words = 0x%x\n", 
 			(uint)start, (uint)end, (uint)num_words);
 
-		for(i=0; i<32; i++) {
+		for(i=0; i<2; i++) {
 
 			val = ~((ulong)0x1 << i);
 
 			for(j=0; j<num_words; j++) {
 				start[j] = val;
+				if(j % 4096 == 0) printf("Fill memory range: 0x%x\r", j);
 			}
+
+			printf("Fill all specified memory range\n");
 
 			for(j=0; j<num_words; j++) {
 				tmp = start[j];
@@ -740,6 +753,7 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 					++num_pass;
 				}
 			}
+			printf("Pass count: %08x\n", i);
 		}
 
 	}
@@ -825,6 +839,8 @@ int do_mem_mtest (cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 			}
 		    }
 		}
+
+		printf("Data line test complete\n");
 
 		/*
 		 * Based on code whose Original Author and Copyright

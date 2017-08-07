@@ -39,8 +39,6 @@
  **************************************************************************
  */
 
-//#define DEBUG
-
 #include <common.h>
 #include <command.h>
 #include <environment.h>

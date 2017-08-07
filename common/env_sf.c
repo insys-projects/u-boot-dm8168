@@ -117,11 +117,12 @@ int saveenv(void)
 	}
 
 	ret = 0;
-	puts("done\n");
+	puts("done");
 
  done:
 	if (saved_buffer)
 		free(saved_buffer);
+	puts("\n");
 	return ret;
 }
 
