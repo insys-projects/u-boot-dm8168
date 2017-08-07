@@ -1175,7 +1175,7 @@ void set_muxconf_regs(void)
 
         /* UART1 Muxconfig */
         __raw_writew( M0, UART1_RXD);
-        __raw_writew((M0 | EN), UART1_TXD);
+        __raw_writew( M0 | EN, UART1_TXD);
         __raw_writew( M3 | PTU | EN, UART1_RTSN);
         __raw_writew( M3 | PTU | EN, UART1_CTSN);
 }
